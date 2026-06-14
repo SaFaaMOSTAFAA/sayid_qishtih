@@ -1,0 +1,475 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-31 18:55+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: configrations/admin.py:19 configrations/admin.py:38
+#: configrations/admin.py:56 configrations/admin.py:74
+#: configrations/admin.py:91 configrations/models.py:13
+#: configrations/models.py:26 configrations/models.py:47
+#: configrations/models.py:67 configrations/models.py:86
+msgid "image"
+msgstr "الصورة"
+
+#: configrations/admin.py:23 configrations/models.py:11
+msgid "content"
+msgstr "المحتوى"
+
+#: configrations/admin.py:47 configrations/admin.py:65
+#: configrations/admin.py:82 configrations/models.py:44
+#: configrations/models.py:64 configrations/models.py:83
+msgid "description"
+msgstr "الوصف"
+
+#: configrations/admin.py:100 configrations/models.py:102
+#, fuzzy
+#| msgid "description"
+msgid "certificate_description"
+msgstr "الوصف"
+
+#: configrations/admin.py:104
+msgid "Our message"
+msgstr ""
+
+#: configrations/admin.py:108
+msgid "Our vision"
+msgstr ""
+
+#: configrations/admin.py:112
+msgid "Technical innovation"
+msgstr ""
+
+#: configrations/admin.py:115 configrations/models.py:115
+#, fuzzy
+#| msgid "Social & Environmental Responsibility"
+msgid "Social responsibility"
+msgstr "المسؤولية المجتمعية والبيئية"
+
+#: configrations/admin.py:118 configrations/models.py:117
+msgid "Customer experience"
+msgstr ""
+
+#: configrations/admin.py:126 configrations/models.py:100
+msgid "certificate_image"
+msgstr ""
+
+#: configrations/models.py:7 configrations/models.py:27
+msgid "name"
+msgstr "الاسم"
+
+#: configrations/models.py:8 configrations/models.py:28
+msgid "name_ar"
+msgstr "الاسم بالعربية"
+
+#: configrations/models.py:9 configrations/models.py:41
+#: configrations/models.py:61 configrations/models.py:80
+msgid "title"
+msgstr "العنوان"
+
+#: configrations/models.py:10 configrations/models.py:42
+#: configrations/models.py:62 configrations/models.py:81
+msgid "title_ar"
+msgstr "العنوان بالعربية"
+
+#: configrations/models.py:12
+msgid "content_ar"
+msgstr "المحتوى بالعربية"
+
+#: configrations/models.py:14 configrations/models.py:29
+#: configrations/models.py:49 configrations/models.py:69
+#: configrations/models.py:88
+msgid "is_active"
+msgstr "نشيط"
+
+#: configrations/models.py:15 configrations/models.py:30
+#: configrations/models.py:50 configrations/models.py:70
+#: configrations/models.py:89 configrations/models.py:108
+msgid "created_at"
+msgstr "تم الإنشاء في"
+
+#: configrations/models.py:21
+msgid "Success Story"
+msgstr "قصة نجاح"
+
+#: configrations/models.py:22 front/index-en.html:482 front/index.html:482
+msgid "Success Stories"
+msgstr "قصص نجاح"
+
+#: configrations/models.py:36
+msgid "Logo"
+msgstr "الشعار"
+
+#: configrations/models.py:37
+msgid "Logos"
+msgstr "الشعارات"
+
+#: configrations/models.py:45 configrations/models.py:65
+#: configrations/models.py:84
+msgid "description_ar"
+msgstr "الوصف بالعربية"
+
+#: configrations/models.py:56
+msgid "Service"
+msgstr "الخدمة"
+
+#: configrations/models.py:57
+msgid "Services"
+msgstr "الخدمات"
+
+#: configrations/models.py:76
+msgid "Advantage"
+msgstr "ميزة"
+
+#: configrations/models.py:77
+msgid "Advantages"
+msgstr "المميزات"
+
+#: configrations/models.py:95
+msgid "Goal"
+msgstr "الهدف"
+
+#: configrations/models.py:96
+msgid "Goals"
+msgstr "الاهداف"
+
+#: configrations/models.py:103
+#, fuzzy
+#| msgid "description_ar"
+msgid "certificate_description_ar"
+msgstr "الوصف بالعربية"
+
+#: configrations/models.py:104
+msgid "Our_message"
+msgstr ""
+
+#: configrations/models.py:105
+msgid "Our_message_ar"
+msgstr ""
+
+#: configrations/models.py:106
+msgid "Our_vision"
+msgstr ""
+
+#: configrations/models.py:107
+msgid "Our_vision_ar"
+msgstr ""
+
+#: configrations/models.py:109
+msgid "email"
+msgstr ""
+
+#: configrations/models.py:110
+msgid "phone_number"
+msgstr ""
+
+#: configrations/models.py:111
+msgid "address"
+msgstr ""
+
+#: configrations/models.py:112
+msgid "address_ar"
+msgstr ""
+
+#: configrations/models.py:113
+msgid "Technical_innovation"
+msgstr ""
+
+#: configrations/models.py:114
+msgid "Technical_innovation_ar"
+msgstr ""
+
+#: configrations/models.py:116
+#, fuzzy
+#| msgid "Social & Environmental Responsibility"
+msgid "Social responsibility_ar"
+msgstr "المسؤولية المجتمعية والبيئية"
+
+#: configrations/models.py:118
+#, fuzzy
+#| msgid "Customer Experience and After-Sales Services"
+msgid "Customer experience_ar"
+msgstr "تجربة العميل وخدمات ما بعد الصيانه"
+
+#: configrations/models.py:124
+msgid "Configuration"
+msgstr ""
+
+#: configrations/models.py:125
+msgid "Configurations"
+msgstr ""
+
+#: core/settings.py:146
+msgid "English"
+msgstr "الإنجليزية"
+
+#: core/settings.py:147
+msgid "Arabic"
+msgstr "العربية"
+
+#: core/settings.py:156
+msgid "Admin Console"
+msgstr "اللوحة الرئيسية للإدارة"
+
+#: core/settings.py:157
+msgid "Management System"
+msgstr "نظام إدارة"
+
+#: core/settings.py:158
+msgid "My Project"
+msgstr "المشروع"
+
+#: core/settings.py:159
+msgid "Welcome to the Admin Dashboard"
+msgstr "مرحبا في لوحة التحكم"
+
+#: core/settings.py:165
+msgid "Dashboard"
+msgstr "اللوحة الرئيسية"
+
+#: front/index-en.html:8 front/index.html:8
+msgid "Quality Perfection"
+msgstr "جودة الإتقان"
+
+#: front/index-en.html:35 front/index-en.html:652 front/index.html:35
+#: front/index.html:652
+msgid "Quality Perfection Logo"
+msgstr "شعار جودة الإتقان"
+
+#: front/index-en.html:66 front/index-en.html:99 front/index.html:66
+#: front/index.html:99
+msgid "Home"
+msgstr "الرئيسية"
+
+#: front/index-en.html:67 front/index-en.html:100 front/index-en.html:216
+#: front/index.html:67 front/index.html:100 front/index.html:216
+msgid "About Us"
+msgstr "من نحن"
+
+#: front/index-en.html:68 front/index-en.html:101 front/index-en.html:242
+#: front/index.html:68 front/index.html:101 front/index.html:242
+msgid "Our Services"
+msgstr "خدماتنا"
+
+#: front/index-en.html:69 front/index-en.html:102 front/index.html:69
+#: front/index.html:102
+msgid "Certificates"
+msgstr "الشهادات"
+
+#: front/index-en.html:70 front/index-en.html:103 front/index.html:70
+#: front/index.html:103
+msgid "Contact Us"
+msgstr "اتصل بنا"
+
+#: front/index-en.html:145 front/index.html:145
+msgid "Quality Perfection Center"
+msgstr "مركز جودة الاتقان"
+
+#: front/index-en.html:147 front/index.html:147
+msgid "Trust since 2008"
+msgstr "ثقة تمتد منذ 2008"
+
+#: front/index-en.html:181 front/index.html:181
+msgid "About Company"
+msgstr "عن المركز"
+
+#: front/index-en.html:194 front/index.html:194
+msgid "Brief about Quality Perfection Center"
+msgstr "نبذه عن مركز جودة الاتقان"
+
+#: front/index-en.html:209 front/index.html:209
+msgid "Read More"
+msgstr "المزيد"
+
+#: front/index-en.html:256 front/index.html:256
+msgid "Center's Services"
+msgstr "خدمات المركز"
+
+#: front/index-en.html:260 front/index.html:260
+msgid ""
+"We offer at Quality Perfection Center a wide range of integrated services"
+msgstr ""
+"نقـــدم فـــي مركــــز جــــودة الإتقـــان مجموعــــة واسعــــة مـــن "
+"الخدمـــات المتكاملــــة"
+
+#: front/index-en.html:337 front/index.html:337
+msgid "Technical Innovation & Digital Transformation"
+msgstr "الابتكار التقنى والتحول الرقمي"
+
+#: front/index-en.html:373 front/index.html:373
+msgid "Why Quality Perfection Center"
+msgstr "لماذا مركز جودة الاتقان"
+
+#: front/index-en.html:386 front/index.html:386
+msgid "What Distinguishes Us"
+msgstr "ما يميزنا"
+
+#: front/index-en.html:423 front/index.html:423
+msgid "Social & Environmental Responsibility"
+msgstr "المسؤولية المجتمعية والبيئية"
+
+#: front/index-en.html:469 front/index.html:469
+msgid "Our Clients' Stories"
+msgstr "قصص عملاؤنا"
+
+#: front/index-en.html:578 front/index.html:578
+msgid "Customer Experience and After-Sales Services"
+msgstr "تجربة العميل وخدمات ما بعد الصيانه"
+
+#: front/index-en.html:630 front/index.html:630
+msgid "General Mechanics"
+msgstr "الميكانيكا العامة"
+
+#: front/index-en.html:662 front/index.html:662
+msgid "Riyadh - Al-Sulai District"
+msgstr "الرياض - حي السلي"
+
+#: front/index-en.html:686 front/index.html:686
+msgid "All Rights Reserved © 2024"
+msgstr "جميع الحقوق محفوظة © 2024"
+
+#~ msgid ""
+#~ "Since the establishment of the Quality Perfection Center in 2008, our "
+#~ "name has become synonymous with quality and trust in the world of "
+#~ "comprehensive car maintenance. We started with an ambitious vision to "
+#~ "provide services that exceed customer expectations, and we succeeded in "
+#~ "building a wide base of individual customers, companies, and government "
+#~ "institutions. During more than fifteen years of continuous work, we have "
+#~ "proven that success is only determined by commitment, perfection, and "
+#~ "constant keenness for development."
+#~ msgstr ""
+#~ "منذ تأســـيس مركـــز جودة الإتقان عـــام 2008م فـــي، أصبح اســـمنا مرادفً "
+#~ "ا للجودة والثقة في عالم صيانة الســـيارات الشـــاملة. انطلقنا برؤية طموحة "
+#~ "لتقديم خدمات تتجـــاوز توقعـــات العـــملاء، ونجحنا في بناء قاعدة "
+#~ "واســـعة من العـــملاء من الأفراد والشركات والمؤسسات الحكومية. خلال أكثر "
+#~ "من خمســـة عشـــة عاما من العمل المتواصل، أثبتنا أن النجاح لا يتحدد الا "
+#~ "بالالتزام، الإتقان، والحرص الدائم على التطوير."
+
+#~ msgid ""
+#~ "We use the latest electronic inspection systems and intelligent analysis "
+#~ "tools to provide an accurate and rapid diagnosis of technical problems. "
+#~ "We also provide an online appointment booking service and a car status "
+#~ "follow-up service, which facilitates the customer experience and saves "
+#~ "time and effort"
+#~ msgstr ""
+#~ "نســـتخدم أحدث أنظمة الفحص الإلكتروني وأدوات التحليل الذكي لتقديم "
+#~ "تشـــخيص دقيق وســـريع للمشـــاكل فنية. كما نوفر خدمة حجز المواعيد "
+#~ "ومتابعة حالة السيارة عبر الإنترنت، مما يسهل تجربة العميل ويوفر الوقت "
+#~ "والجهد"
+
+#~ msgid ""
+#~ "We at Quality Perfection Center are committed to applying environmental "
+#~ "safety standards by using environmentally friendly materials and managing "
+#~ "waste in safe ways. We also participate in community initiatives to "
+#~ "support awareness of traffic safety and the preservation of vehicles"
+#~ msgstr ""
+#~ "نلتـــزم فـــي مركز جودة الإتقان بتطبيق معاييـــر السلامة البيئية من خلال "
+#~ "اســـتخدام مـــواد صديقة للبيئـــة وإدارة النفايات بطرق آمنة. كما "
+#~ "نشـــارك في مبادرات مجتمعيـــــة لدعـــــم التوعيــــة بالسلامــــة "
+#~ "المروريــــة والحفــاظ علــــى المركبــــات"
+
+#~ msgid "Future Vision & Expansion"
+#~ msgstr "الرؤية المستقبلية والتوسع"
+
+#~ msgid ""
+#~ "We plan to open new branches inside and outside the city of Riyadh, with "
+#~ "the introduction of smart electronic services that support the customer "
+#~ "experience and keep pace with technical development"
+#~ msgstr ""
+#~ "نخطط لافتتاح فروع جديدة داخل وخارج مدينة الرياض، م إدخـــال خدمات "
+#~ "إلكترونيـــة ذكية تدعم تجربة العميل وتواكب التطور التقني"
+
+#~ msgid ""
+#~ "Because our service does not end with delivery, we care about the "
+#~ "smallest details through follow-up and periodic maintenance services and "
+#~ "a specialized team to respond to inquiries and provide technical advice "
+#~ "around the clock"
+#~ msgstr ""
+#~ "لأن خدمتنا لاتنتهي عند التسليم، نهتم بأدق التفاصيل من خلال خدمات المتابعة "
+#~ "والصيانة الدورية وفريق متخصص للرد على الاستفسارات وتقديم المشورة الفنية "
+#~ "على مدار الساعة"
+
+#~ msgid ""
+#~ "Comprehensive maintenance including engine systems, automatic "
+#~ "transmission, air conditioning, and suspension systems"
+#~ msgstr ""
+#~ "صيانـــــــة شاملـــــة تشمــــــل أنظمــــــة المحـــــــرك، "
+#~ "الفرامــــلالعــــــــــــــــــــــزم، التكييــــــــــــــــــــــف، "
+#~ "ونظـــــــــــــــــــم التعليــــــــــــــــــــــق"
+
+#~ msgid "الرئيسية"
+#~ msgstr "الرئيسية"
+
+#~ msgid "من نحن"
+#~ msgstr "من نحن"
+
+#~ msgid "خدماتنا"
+#~ msgstr "خدماتنا"
+
+#~ msgid "الشهادات"
+#~ msgstr "الشهادات"
+
+#~ msgid "اتصل بنا"
+#~ msgstr "اتصل بنا"
+
+#~ msgid "مركز جودة الاتقان"
+#~ msgstr "مركز جودة الاتقان"
+
+#~ msgid "ثقة تمتد منذ 2008"
+#~ msgstr "ثقة تمتد منذ 2008"
+
+#~ msgid "عن المركز"
+#~ msgstr "عن المركز"
+
+#~ msgid "نبذه عن مركز جودة الاتقان"
+#~ msgstr "نبذه عن مركز جودة الاتقان"
+
+#~ msgid "المزيد"
+#~ msgstr "المزيد"
+
+#~ msgid "خدمات المركز"
+#~ msgstr "خدمات المركز"
+
+#~ msgid "الابتكار التقنى والتحول الرقمي"
+#~ msgstr "الابتكار التقنى والتحول الرقمي"
+
+#~ msgid "لماذا مركز جودة الاتقان"
+#~ msgstr "لماذا مركز جودة الاتقان"
+
+#~ msgid "ما يميزنا"
+#~ msgstr "ما يميزنا"
+
+#~ msgid "المسؤولية المجتمعية والبيئية"
+#~ msgstr "المسؤولية المجتمعية والبيئية"
+
+#~ msgid "قصص عملاؤنا"
+#~ msgstr "قصص عملاؤنا"
+
+#~ msgid "قصص النجاح"
+#~ msgstr "قصص النجاح"
+
+#~ msgid "تجربة العميل وخدمات ما بعد الصيانه"
+#~ msgstr "تجربة العميل وخدمات ما بعد الصيانه"
+
+#~ msgid "الميكانيكا العامة"
+#~ msgstr "الميكانيكا العامة"
+
+#~ msgid "الرياض - حي السلي"
+#~ msgstr "الرياض - حي السلي"
+
+#~ msgid "جميع الحقوق محفوظة © 2024"
+#~ msgstr "جميع الحقوق محفوظة © 2024"

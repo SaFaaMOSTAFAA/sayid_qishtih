@@ -1,0 +1,7 @@
+charset-normalizer==3.4.4
+Django==6.0.1
+django-jazzmin==3.0.1
+django-rosetta==0.10.3
+
+# image
+pillow==12.1.0
