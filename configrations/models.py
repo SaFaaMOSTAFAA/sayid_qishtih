@@ -34,3 +34,20 @@ class Configuration(models.Model):
     class Meta:
         verbose_name = _("Configuration")
         verbose_name_plural = _("Configurations")
+
+
+
+class ContactUs(models.Model):
+    name = models.CharField(_("name"), max_length=255)
+    name_ar = models.CharField(_("name_ar"), max_length=255, null=True, blank=True)
+    phone_number = models.CharField(_("phone_number"), max_length=20)
+    message = models.TextField(_("message"))
+    message_ar = models.TextField(_("message_ar"), null=True, blank=True)
+    created_at = models.DateTimeField(_("created_at"), auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Contact Us")
+        verbose_name_plural = _("Contact Us")
