@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from .models import Configuration
+from .models import Configuration, ContactUs
 
 
 @admin.register(Configuration)
@@ -47,3 +47,11 @@ class ConfigurationAdmin(admin.ModelAdmin):
         return obj.About_the_Center[:50] + '...' if len(obj.About_the_Center) > 50 else obj.About_the_Center # noqa
     About_the_Center_summary.short_description = _('About the Center')
 
+
+@admin.register(ContactUs)
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone_number', 'message_summary', 'created_at')
+
+    def message_summary(self, obj):
+        return obj.message[:50] + '...' if len(obj.message) > 50 else obj.message
+    message_summary.short_description = _('message')
