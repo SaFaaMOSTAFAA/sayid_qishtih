@@ -187,3 +187,11 @@ JAZZMIN_SETTINGS["custom_js"] = None # Can be used for extra JS if needed
 JAZZMIN_SETTINGS.update({
     "sidebar_mini": False,
 })
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://sayid-qishtih.baronlearning.com",
+    "http://localhost:8000",
+    "http://localhost:3000",
+]
