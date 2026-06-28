@@ -16,6 +16,13 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Client_review)
 class ClientReviewAdmin(admin.ModelAdmin):
-    list_display = ('name', 'name_ar', 'review', 'review_ar', 'rating', 'created_at')
-    list_filter = ('rating',)
-    search_fields = ('name', 'name_ar', 'review', 'review_ar')
+    list_display = ('user', 'review', 'review_ar', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = (
+        'user__username',
+        'user__email',
+        'user__first_name',
+        'user__last_name',
+        'review',
+        'review_ar',
+    )
