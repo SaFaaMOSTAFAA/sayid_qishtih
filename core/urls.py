@@ -34,8 +34,8 @@ urlpatterns = [
 
 # Wrap your admin and other routes in i18n_patterns
 urlpatterns += i18n_patterns(
-    path('admin/', admin.site.urls),
-    path('products/', include('product.url')),
+    path('api/admin/', admin.site.urls),
+    path('api/', include('product.url')),
     path("api/auth/register/", RegisterView.as_view(), name="register"),
     path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
