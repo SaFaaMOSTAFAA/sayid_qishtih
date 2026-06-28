@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles"
+    "django.contrib.staticfiles",
+    "corsheaders",
+
 ]
 
 INSTALLED_APPS += [
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",  # 👈 important
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -204,4 +207,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://sayid-qishtih.baronlearning.com",
     "http://localhost:8000",
     "http://localhost:3000",
+    "http://localhost:5173",
+
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://sayid-qishtih.baronlearning.com",
 ]
