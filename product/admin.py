@@ -1,28 +1,58 @@
 from django.contrib import admin
-from .models import Category, Product, Client_review
+
+from .models import Category, Client_review, Offer, Product
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'name_ar')
-    
+    list_display = ("name", "name_ar", "display_order")
+    list_editable = ("display_order",)
+    ordering = ("display_order", "id")
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'name_ar', 'category', 'price', 'image')
-    list_filter = ('category',)
-    search_fields = ('name', 'description', 'name_ar', 'description_ar')
-    
+    list_display = (
+        "name",
+        "name_ar",
+        "category",
+        "price",
+        "quantity",
+        "is_visible",
+        "is_available",
+        "display_order",
+        "image",
+    )
+    list_filter = ("category", "is_visible", "is_available")
+    list_editable = ("is_visible", "is_available", "display_order", "quantity")
+    search_fields = ("name", "description", "name_ar", "description_ar")
+    ordering = ("display_order", "-created_at")
+
+
+@admin.register(Offer)
+class OfferAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "title_ar",
+        "is_active",
+        "start_date",
+        "end_date",
+        "created_at",
+    )
+    list_filter = ("is_active", "start_date", "end_date")
+    list_editable = ("is_active",)
+    search_fields = ("title", "title_ar", "description", "description_ar")
+
 
 @admin.register(Client_review)
 class ClientReviewAdmin(admin.ModelAdmin):
-    list_display = ('user', 'review', 'review_ar', 'rating', 'created_at')
-    list_filter = ('rating', 'created_at')
+    list_display = ("user", "review", "review_ar", "rating", "created_at")
+    list_filter = ("rating", "created_at")
     search_fields = (
-        'user__username',
-        'user__email',
-        'user__first_name',
-        'user__last_name',
-        'review',
-        'review_ar',
+        "user__username",
+        "user__email",
+        "user__first_name",
+        "user__last_name",
+        "review",
+        "review_ar",
     )

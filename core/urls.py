@@ -36,6 +36,7 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('products/', include('product.url')),
+    path('api/', include('configrations.urls')),
     path("api/auth/register/", RegisterView.as_view(), name="register"),
     path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
@@ -51,8 +52,6 @@ urlpatterns += i18n_patterns(
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
-    # If you have a custom dashboard view:
-    # path('dashboard/', include('myapp.urls')),
 )
 
 if settings.DEBUG:
