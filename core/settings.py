@@ -70,6 +70,15 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "auth_login": "10/minute",
+        "auth_register": "5/hour",
+        "contact_submit": "5/minute",
+        "review_create": "10/hour",
+    },
 }
 
 SIMPLE_JWT = {
@@ -137,7 +146,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -156,8 +165,7 @@ TIME_ZONE = "Africa/Cairo"
 STATIC_ROOT = BASE_DIR / "static_root"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    BASE_DIR / "front",
+    path for path in (BASE_DIR / "static", BASE_DIR / "front") if path.exists()
 ]
 
 MEDIA_URL = '/media/'
@@ -214,4 +222,11 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://sayid-qishtih.baronlearning.com",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-language",
+    "authorization",
+    "content-type",
 ]

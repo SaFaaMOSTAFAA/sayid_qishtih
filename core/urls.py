@@ -25,8 +25,13 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from product.views import MeView, RegisterView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from configrations.views import ContactUsViewSet
+from product.views import DashboardStatsView, LoginView, MeView, RegisterView
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r"contact-us", ContactUsViewSet, basename="contact-us")
 
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),  # Required for the language selector
@@ -36,8 +41,10 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     path('api/admin/', admin.site.urls),
     path('api/', include('product.url')),
+    path("api/", include(router.urls)),
+    path("api/dashboard/stats/", DashboardStatsView.as_view(), name="dashboard_stats"),
     path("api/auth/register/", RegisterView.as_view(), name="register"),
-    path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/auth/login/", LoginView.as_view(), name="token_obtain_pair"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/auth/me/", MeView.as_view(), name="auth_me"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
