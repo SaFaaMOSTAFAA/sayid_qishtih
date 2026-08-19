@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -12,7 +11,7 @@ class Configuration(models.Model):
     Our_message_ar = models.TextField(_("Our_message_ar"), null=True, blank=True)
     Our_vision = models.TextField(_("Our_vision"), blank=True)
     Our_vision_ar = models.TextField(_("Our_vision_ar"), null=True, blank=True)
-    created_at = models.DateTimeField(_("created_at"), auto_now_add=True)
+    created_at = models.DateTimeField(_("created_at"), auto_now_add=True, db_index=True)
     email = models.EmailField(_("email"), max_length=254, blank=True)
     phone_number = models.CharField(_("phone_number"), max_length=20, blank=True)
     address = models.CharField(_("address"), max_length=255, blank=True)
@@ -40,10 +39,10 @@ class Configuration(models.Model):
 class ContactUs(models.Model):
     name = models.CharField(_("name"), max_length=255)
     name_ar = models.CharField(_("name_ar"), max_length=255, null=True, blank=True)
-    phone_number = models.CharField(_("phone_number"), max_length=20)
+    phone_number = models.CharField(_("phone_number"), max_length=30)
     message = models.TextField(_("message"))
     message_ar = models.TextField(_("message_ar"), null=True, blank=True)
-    created_at = models.DateTimeField(_("created_at"), auto_now_add=True)
+    created_at = models.DateTimeField(_("created_at"), auto_now_add=True, db_index=True)
 
     def __str__(self):
         return self.name
@@ -51,3 +50,4 @@ class ContactUs(models.Model):
     class Meta:
         verbose_name = _("Contact Us")
         verbose_name_plural = _("Contact Us")
+        ordering = ["-created_at", "-id"]

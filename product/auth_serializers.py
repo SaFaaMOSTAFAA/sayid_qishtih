@@ -53,8 +53,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             "access": str(refresh.access_token),
         }
 
-    def get_access(self, obj):
+    def get_access(self, obj) -> str:
         return self._get_tokens(obj)["access"]
 
-    def get_refresh(self, obj):
+    def get_refresh(self, obj) -> str:
         return self._get_tokens(obj)["refresh"]
