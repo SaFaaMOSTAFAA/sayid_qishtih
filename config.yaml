@@ -25,4 +25,4 @@ service_group: www-data
 ssl_email: hosamameen948@gmail.com
 
 # Set true only if www.example.com also points to this server.
-ssl_include_www: yes
+ssl_include_www: False
