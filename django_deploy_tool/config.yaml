@@ -1,0 +1,17 @@
+# Copy this file to config.yaml and edit it.
+
+project_name: sayed_qeshta
+domain: api.alsayedqeshta.com
+
+# Absolute paths on the production server.
+project_path: /opt/sayed_qeshta
+venv_path: /opt/sayed_qeshta/venv
+static_path: /opt/sayed_qeshta/static
+media_path: /opt/sayed_qeshta/media
+
+# Optional. Defaults to /run/<project_name>.sock
+upstream_socket: /run/sayed_qeshta.sock
+
+# Optional; useful if your distro uses different paths.
+# nginx_sites_available: /etc/nginx/sites-available
+# nginx_sites_enabled: /etc/nginx/sites-enabled
