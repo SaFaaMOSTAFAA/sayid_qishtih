@@ -1,50 +1,46 @@
 # Django Deploy Tool
 
-This is the first module of the deployment tool: Nginx.
+## Deployment order
 
-## Install
+1. Bootstrap
+   - Create venv if missing
+   - Upgrade pip
+   - Install requirements
+   - Create media directory
+   - Run collectstatic
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+2. Systemd / Gunicorn
+   - Install Gunicorn if missing
+   - Get workers and threads
+   - Create systemd service
+   - daemon-reload
+   - enable and start service
 
-## Configure
+3. Nginx
+   - Check/install Nginx
+   - Create Nginx config
+   - Enable site
+   - nginx -t
+   - Reload Nginx
 
-```bash
-cp config.yaml.example config.yaml
-nano config.yaml
-```
+## Workers and threads
 
-Set:
+You can define them in config.yaml:
 
-- `project_name`
-- `domain`
-- `project_path`
-- `venv_path`
-- `static_path`
-- `media_path`
+    workers: 4
+    threads: 2
 
-## Test safely
+Or remove them from config.yaml and the script asks:
 
-```bash
-sudo .venv/bin/python deploy.py --config config.yaml --dry-run
-```
+    Enter number of Gunicorn workers [3]:
+    Enter number of Gunicorn threads [2]:
 
-## Deploy Nginx
+Press Enter to use the defaults.
 
-```bash
-sudo .venv/bin/python deploy.py --config config.yaml
-```
+## Run
 
-The module will:
+    sudo python3 deploy.py --config config.yaml --step all
 
-1. Validate the config.
-2. Render the Nginx template.
-3. Write `sites-available/<project_name>`.
-4. Create the `sites-enabled/<project_name>` symlink.
-5. Run `nginx -t`.
-6. Reload Nginx only after a successful test.
+Dry run:
 
-The next modules can be added independently for Gunicorn/systemd, SSL, project bootstrap, migrations, collectstatic, health checks, and rollback.
+    sudo python3 deploy.py --config config.yaml --dry-run

@@ -1,133 +1,86 @@
 from pathlib import Path
 import os
+import shutil
 import subprocess
-
 
 class NginxDeployer:
     def __init__(self, config, dry_run=False):
         self.config = config
         self.dry_run = dry_run
-
-        self.template_path = (
-            Path(__file__).resolve().parent.parent
-            / "templates"
-            / "nginx.conf.j2"
-        )
-
-        self.nginx_available = Path(
-            config.get("nginx_sites_available", "/etc/nginx/sites-available")
-        )
-        self.nginx_enabled = Path(
-            config.get("nginx_sites_enabled", "/etc/nginx/sites-enabled")
-        )
-
-        self.site_name = config["project_name"]
-        self.target_path = self.nginx_available / self.site_name
-        self.link_path = self.nginx_enabled / self.site_name
+        self.project_name = config["project_name"]
+        self.port = int(config["port"])
+        self.template_path = Path(__file__).resolve().parent.parent / "templates" / "nginx.conf.j2"
+        self.available = Path(config.get("nginx_sites_available", "/etc/nginx/sites-available"))
+        self.enabled = Path(config.get("nginx_sites_enabled", "/etc/nginx/sites-enabled"))
+        self.target = self.available / self.project_name
+        self.link = self.enabled / self.project_name
 
     def run(self):
-        self._check_root()
-        self._check_template()
-        rendered = self._render_template()
+        if not self.dry_run and os.geteuid() != 0:
+            raise PermissionError("Run Nginx deployment with sudo.")
+        self.check_or_install_nginx()
+        print("[1/5] Nginx ready.")
+        content = self.render_config()
+        print("[2/5] Nginx configuration generated.")
+        self.install_config(content)
+        print("[3/5] Nginx configuration installed.")
+        self.enable_site()
+        print("[4/5] Site enabled.")
+        self.command(["nginx", "-t"])
+        self.command(["systemctl", "reload", "nginx"])
+        print("[5/5] Nginx tested and reloaded.")
 
-        print("[1/5] Nginx configuration generated.")
-
-        self._install_config(rendered)
-        print(f"[2/5] Installed: {self.target_path}")
-
-        self._enable_site()
-        print(f"[3/5] Enabled site: {self.link_path}")
-
-        self._nginx_test()
-        print("[4/5] nginx -t passed.")
-
-        self._reload_nginx()
-        print("[5/5] Nginx reloaded.")
-
-    def _check_root(self):
-        if self.dry_run:
+    def check_or_install_nginx(self):
+        if shutil.which("nginx"):
+            print("  -> Nginx already installed.")
             return
+        print("  -> Nginx not found. Installing...")
+        if shutil.which("apt-get"):
+            self.command(["apt-get", "update"])
+            self.command(["apt-get", "install", "-y", "nginx"])
+        elif shutil.which("dnf"):
+            self.command(["dnf", "install", "-y", "nginx"])
+        elif shutil.which("yum"):
+            self.command(["yum", "install", "-y", "nginx"])
+        else:
+            raise RuntimeError("No supported package manager found.")
+        if not self.dry_run and not shutil.which("nginx"):
+            raise RuntimeError("Nginx installation failed.")
+        self.command(["systemctl", "enable", "--now", "nginx"])
 
-        if os.geteuid() != 0:
-            raise PermissionError(
-                "This operation needs root privileges. Run with sudo."
-            )
-
-    def _check_template(self):
-        if not self.template_path.exists():
-            raise FileNotFoundError(
-                f"Nginx template not found: {self.template_path}"
-            )
-
-    def _render_template(self):
-        template = self.template_path.read_text(encoding="utf-8")
-
+    def render_config(self):
+        content = self.template_path.read_text(encoding="utf-8")
         values = {
             "domain": self.config["domain"],
-            "project_path": self.config["project_path"],
-            "venv_path": self.config["venv_path"],
             "static_path": self.config["static_path"],
             "media_path": self.config["media_path"],
-            "upstream_socket": self.config.get(
-                "upstream_socket",
-                f"/run/{self.config['project_name']}.sock",
-            ),
+            "port": self.port,
         }
-
         for key, value in values.items():
-            template = template.replace("{{ " + key + " }}", str(value))
+            content = content.replace("{{ " + key + " }}", str(value))
+        return content
 
-        return template
-
-    def _install_config(self, content):
+    def install_config(self, content):
         if self.dry_run:
-            print("\n--- DRY RUN: Nginx config ---")
+            print("\n--- DRY RUN: NGINX CONFIG ---")
             print(content)
-            print("--- END DRY RUN ---\n")
+            print("--- END ---\n")
             return
+        self.available.mkdir(parents=True, exist_ok=True)
+        self.target.write_text(content, encoding="utf-8")
 
-        self.nginx_available.mkdir(parents=True, exist_ok=True)
-        self.nginx_enabled.mkdir(parents=True, exist_ok=True)
-
-        self.target_path.write_text(content, encoding="utf-8")
-        self.target_path.chmod(0o644)
-
-    def _enable_site(self):
+    def enable_site(self):
         if self.dry_run:
             return
+        self.enabled.mkdir(parents=True, exist_ok=True)
+        if self.link.exists() or self.link.is_symlink():
+            self.link.unlink()
+        self.link.symlink_to(self.target)
 
-        if self.link_path.is_symlink() or self.link_path.exists():
-            if self.link_path.is_symlink():
-                if self.link_path.resolve() == self.target_path.resolve():
-                    return
-            self.link_path.unlink()
-
-        self.link_path.symlink_to(self.target_path)
-
-    def _nginx_test(self):
+    def command(self, command):
+        print("  ->", " ".join(map(str, command)))
         if self.dry_run:
-            print("[DRY RUN] Would execute: nginx -t")
             return
-
-        self._run(["nginx", "-t"])
-
-    def _reload_nginx(self):
-        if self.dry_run:
-            print("[DRY RUN] Would execute: systemctl reload nginx")
-            return
-
-        self._run(["systemctl", "reload", "nginx"])
-
-    @staticmethod
-    def _run(command):
-        result = subprocess.run(
-            command,
-            text=True,
-            capture_output=True,
-        )
-
+        result = subprocess.run(command, text=True, capture_output=True)
         if result.returncode != 0:
-            details = (result.stderr or result.stdout).strip()
-            raise RuntimeError(
-                f"Command failed: {' '.join(command)}\n{details}"
-            )
+            raise RuntimeError((result.stderr or result.stdout).strip())
