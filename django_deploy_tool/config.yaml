@@ -1,17 +1,27 @@
-# Copy this file to config.yaml and edit it.
-
 project_name: sayed_qeshta
 domain: api.alsayedqeshta.com
 
-# Absolute paths on the production server.
 project_path: /opt/sayed_qeshta
 venv_path: /opt/sayed_qeshta/venv
+
 static_path: /opt/sayed_qeshta/static
 media_path: /opt/sayed_qeshta/media
 
-# Optional. Defaults to /run/<project_name>.sock
-upstream_socket: /run/sayed_qeshta.sock
+requirements_path: /opt/sayed_qeshta/requirements.txt
+manage_py_path: /opt/sayed_qeshta/manage.py
 
-# Optional; useful if your distro uses different paths.
-# nginx_sites_available: /etc/nginx/sites-available
-# nginx_sites_enabled: /etc/nginx/sites-enabled
+gunicorn_module: config.wsgi:application
+port: 8000
+
+service_user: www-data
+service_group: www-data
+
+# Optional:
+# workers: 3
+# threads: 2
+
+# SSL / Certbot
+ssl_email: hosamameen948@gmail.com
+
+# Set true only if www.example.com also points to this server.
+ssl_include_www: yes

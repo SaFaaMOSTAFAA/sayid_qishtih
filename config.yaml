@@ -1,14 +1,14 @@
-project_name: my_django_app
-domain: example.com
+project_name: sayed_qeshta
+domain: api.alsayedqeshta.com
 
-project_path: /var/www/my_django_app
-venv_path: /var/www/my_django_app/venv
+project_path: /opt/sayed_qeshta
+venv_path: /opt/sayed_qeshta/venv
 
-static_path: /var/www/my_django_app/static
-media_path: /var/www/my_django_app/media
+static_path: /opt/sayed_qeshta/static
+media_path: /opt/sayed_qeshta/media
 
-requirements_path: /var/www/my_django_app/requirements.txt
-manage_py_path: /var/www/my_django_app/manage.py
+requirements_path: /opt/sayed_qeshta/requirements.txt
+manage_py_path: /opt/sayed_qeshta/manage.py
 
 gunicorn_module: config.wsgi:application
 port: 8000
@@ -19,5 +19,9 @@ service_group: www-data
 # Optional:
 # workers: 3
 # threads: 2
-#
-# If workers or threads are missing, the deploy script asks you interactively.
+
+# SSL / Certbot
+ssl_email: hosamameen948@gmail.com
+
+# Set true only if www.example.com also points to this server.
+ssl_include_www: yes

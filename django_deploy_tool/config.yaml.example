@@ -19,5 +19,9 @@ service_group: www-data
 # Optional:
 # workers: 3
 # threads: 2
-#
-# If workers or threads are missing, the deploy script asks you interactively.
+
+# SSL / Certbot
+ssl_email: admin@example.com
+
+# Set true only if www.example.com also points to this server.
+ssl_include_www: false

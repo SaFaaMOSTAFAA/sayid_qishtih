@@ -2,44 +2,61 @@
 
 ## Deployment order
 
-1. Bootstrap
-   - Create venv if missing
-   - Upgrade pip
-   - Install requirements
-   - Create media directory
-   - Run collectstatic
+### 1. Bootstrap
+- Create virtual environment if missing
+- Upgrade pip
+- Install requirements
+- Create media directory if missing
+- Run `collectstatic --noinput`
 
-2. Systemd / Gunicorn
-   - Install Gunicorn if missing
-   - Get workers and threads
-   - Create systemd service
-   - daemon-reload
-   - enable and start service
+### 2. Systemd / Gunicorn
+- Install Gunicorn if missing
+- Get workers and threads from config or interactive input
+- Create systemd service
+- Run `systemctl daemon-reload`
+- Enable and start the service
 
-3. Nginx
-   - Check/install Nginx
-   - Create Nginx config
-   - Enable site
-   - nginx -t
-   - Reload Nginx
+### 3. Nginx
+- Check if Nginx is installed
+- Install Nginx automatically if missing
+- Generate Nginx configuration
+- Enable the site
+- Run `nginx -t`
+- Reload Nginx
 
-## Workers and threads
+### 4. SSL / Certbot
+- Check if Certbot is installed
+- Install Certbot and the Nginx plugin if missing
+- Request a Let's Encrypt certificate
+- Configure HTTP to HTTPS redirect
+- Test certificate renewal
 
-You can define them in config.yaml:
+## SSL configuration
 
-    workers: 4
-    threads: 2
+```yaml
+domain: example.com
+ssl_email: admin@example.com
+ssl_include_www: false
+```
 
-Or remove them from config.yaml and the script asks:
+If `ssl_include_www` is `true`, both:
 
-    Enter number of Gunicorn workers [3]:
-    Enter number of Gunicorn threads [2]:
+- `example.com`
+- `www.example.com`
 
-Press Enter to use the defaults.
+will be requested.
 
-## Run
+Important: both DNS records must point to the server before requesting the certificate.
+
+## Commands
+
+Run everything:
 
     sudo python3 deploy.py --config config.yaml --step all
+
+Run only SSL:
+
+    sudo python3 deploy.py --config config.yaml --step ssl
 
 Dry run:
 
