@@ -61,3 +61,27 @@ Run only SSL:
 Dry run:
 
     sudo python3 deploy.py --config config.yaml --dry-run
+
+## Django WSGI application
+
+Set `config_app` to the Django project package that contains `wsgi.py`:
+
+```yaml
+config_app: core
+```
+
+This deploys Gunicorn with `core.wsgi:application`. If your project uses a
+non-standard WSGI target, `gunicorn_module` can still be set explicitly and
+takes precedence over `config_app`.
+
+## Viewing production logs
+
+From the project root:
+
+    make logs-systemd
+    make logs-gunicorn
+    make logs-nginx
+
+`logs-systemd` and `logs-gunicorn` follow the `sayed_qeshta` service journal;
+Gunicorn output is written there by the systemd service. `logs-nginx` follows
+both Nginx access and error logs.

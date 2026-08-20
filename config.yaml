@@ -10,7 +10,8 @@ media_path: /opt/sayed_qeshta/media
 requirements_path: /opt/sayed_qeshta/requirements.txt
 manage_py_path: /opt/sayed_qeshta/manage.py
 
-gunicorn_module: config.wsgi:application
+# Django project/settings package. Deploy resolves this to core.wsgi:application.
+config_app: core
 port: 8000
 
 service_user: www-data

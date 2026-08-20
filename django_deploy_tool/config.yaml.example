@@ -10,7 +10,8 @@ media_path: /var/www/my_django_app/media
 requirements_path: /var/www/my_django_app/requirements.txt
 manage_py_path: /var/www/my_django_app/manage.py
 
-gunicorn_module: config.wsgi:application
+# Django project/settings package. Deploy resolves this to core.wsgi:application.
+config_app: core
 port: 8000
 
 service_user: www-data
