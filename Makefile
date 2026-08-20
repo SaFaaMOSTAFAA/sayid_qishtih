@@ -2,7 +2,7 @@ PYTHON = venv/bin/python3
 MANAGE = $(PYTHON) manage.py
 SERVICE = sayed_qeshta
 
-.PHONY: run migrate makemigrations makemessages compilemessages shell superuser logs-systemd logs-gunicorn logs-nginx
+.PHONY: run migrate makemigrations makemessages compilemessages shell superuser reload-systemd logs-systemd logs-gunicorn logs-nginx
 
 run:
 	$(MANAGE) runserver
@@ -24,6 +24,10 @@ shell:
 
 superuser:
 	$(MANAGE) createsuperuser
+
+reload-systemd:
+	sudo systemctl daemon-reload
+	sudo systemctl restart $(SERVICE).service
 
 # Follow the application service journal (Gunicorn writes its stdout/stderr here).
 logs-systemd:
