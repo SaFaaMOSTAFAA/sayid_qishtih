@@ -18,8 +18,8 @@ service_user: www-data
 service_group: www-data
 
 # Optional:
-# workers: 3
-# threads: 2
+workers: 3
+threads: 2
 
 # SSL / Certbot
 ssl_email: hosamameen948@gmail.com
