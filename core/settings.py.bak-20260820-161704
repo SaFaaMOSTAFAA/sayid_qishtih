@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0o^s85h-z86c*3y8f9dh4-mx2mz1lmh99_0t((^_rya7nmh!ms'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['api.alsayedqeshta.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -212,7 +212,6 @@ JAZZMIN_SETTINGS.update({
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://alsayedqeshta.com",
     "https://sayid-qishtih.baronlearning.com",
     "http://localhost:8000",
     "http://localhost:3000",
@@ -221,12 +220,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://alsayedqeshta.com",
     "http://localhost:5173",
     "https://sayid-qishtih.baronlearning.com",
-    "https://alsayedqeshta.com",
-    "https://www.alsayedqeshta.com",
-
 ]
 
 CORS_ALLOW_HEADERS = [
