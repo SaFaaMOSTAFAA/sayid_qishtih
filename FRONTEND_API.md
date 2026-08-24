@@ -133,7 +133,13 @@ Base: `/products/products/`
   "description": "...",
   "description_ar": "...",
   "price": "25.00",
-  "image": "/media/products/....jpg",
+  "images": [
+    {
+      "id": 11,
+      "image": "/media/products/....jpg",
+      "display_order": 0
+    }
+  ],
   "category": 1,
   "quantity": 10,
   "is_visible": true,
@@ -149,7 +155,9 @@ Base: `/products/products/`
 | `is_available` | `false` = Out of Stock |
 | `quantity` | When set to `0`, backend forces `is_available=false` |
 | `display_order` | Lower first |
-| `image` | File upload; nullable |
+| `images` | Read-only array of product images; `images[0]` is the primary image |
+| `images` upload field | Repeat multipart field `images` for up to 5 files in one request |
+| `remove_image_ids` | Repeat multipart field `remove_image_ids` on `PUT`/`PATCH` to remove existing images |
 
 ### Query params (staff + public)
 
@@ -276,7 +284,7 @@ Sender data available today: **name**, **phone_number**, **message** (+ optional
 
 ## Image upload note
 
-For `product.image` and `offer.image`, use `FormData`:
+For product images, upload up to 5 files in the same request by repeating `images`:
 
 ```js
 const form = new FormData();
@@ -288,7 +296,8 @@ form.append("quantity", "10");
 form.append("is_visible", "true");
 form.append("is_available", "true");
 form.append("display_order", "0");
-form.append("image", fileInput.files[0]);
+form.append("images", fileInput.files[0]);
+form.append("images", fileInput.files[1]);
 
 await fetch(`${base}/products/products/`, {
   method: "POST",
@@ -296,6 +305,16 @@ await fetch(`${base}/products/products/`, {
   body: form,
 });
 ```
+
+To remove product images while editing, repeat `remove_image_ids` in the same `PUT`/`PATCH` request:
+
+```js
+form.append("remove_image_ids", "11");
+form.append("remove_image_ids", "14");
+form.append("images", replacementFile);
+```
+
+For offers, keep using the single `image` field.
 
 Do **not** set `Content-Type` manually when using `FormData` (browser sets boundary).
 
