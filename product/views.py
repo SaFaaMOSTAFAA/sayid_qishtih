@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models.deletion import ProtectedError
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
@@ -10,12 +11,20 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .auth_serializers import RegisterSerializer
+from .image_utils import (
+    apply_product_image_update,
+    create_product_images,
+    get_remove_image_ids,
+    validate_product_image_update,
+    validate_uploaded_product_images,
+)
 from .models import Category, Client_review, Offer, Product
 from .serializer import (
     CategorySerializer,
     ClientReviewSerializer,
     DashboardStatsSerializer,
     OfferSerializer,
+    ProductMultipartRequestSerializer,
     ProductSerializer,
     UserSummarySerializer,
 )
@@ -88,6 +97,64 @@ class ProductViewSet(ModelViewSet):
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     @extend_schema(
+        request=ProductMultipartRequestSerializer,
+        responses=ProductSerializer,
+        description=(
+            'Upload product images by repeating multipart field "images". '
+            'Remove existing images by repeating multipart field "remove_image_ids". '
+            "A product can have at most five images; images[0] is the primary image."
+        ),
+    )
+    def create(self, request, *args, **kwargs):
+        uploaded_images = request.FILES.getlist("images")
+        validate_uploaded_product_images(uploaded_images)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            self.perform_create(serializer)
+            create_product_images(serializer.instance, uploaded_images)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @extend_schema(
+        request=ProductMultipartRequestSerializer,
+        responses=ProductSerializer,
+        description=(
+            'Upload product images by repeating multipart field "images". '
+            'Remove existing images by repeating multipart field "remove_image_ids". '
+            "Omitted image fields preserve existing images."
+        ),
+    )
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        uploaded_images = request.FILES.getlist("images")
+        remove_image_ids = get_remove_image_ids(request)
+        validate_uploaded_product_images(uploaded_images)
+        validate_product_image_update(instance, uploaded_images, remove_image_ids)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            self.perform_update(serializer)
+            apply_product_image_update(serializer.instance, uploaded_images, remove_image_ids)
+        if getattr(serializer.instance, "_prefetched_objects_cache", None):
+            serializer.instance._prefetched_objects_cache = {}
+        return Response(serializer.data)
+
+    @extend_schema(
+        request=ProductMultipartRequestSerializer,
+        responses=ProductSerializer,
+        description=(
+            'Upload product images by repeating multipart field "images". '
+            'Remove existing images by repeating multipart field "remove_image_ids". '
+            "Omitted image fields preserve existing images."
+        ),
+    )
+    def partial_update(self, request, *args, **kwargs):
+        kwargs["partial"] = True
+        return self.update(request, *args, **kwargs)
+
+    @extend_schema(
         parameters=[
             OpenApiParameter("category", int, OpenApiParameter.QUERY),
             OpenApiParameter("category_id", int, OpenApiParameter.QUERY),
@@ -100,7 +167,7 @@ class ProductViewSet(ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = Product.objects.select_related("category").all()
+        queryset = Product.objects.select_related("category").prefetch_related("images").all()
         is_staff = bool(self.request.user and self.request.user.is_staff)
 
         if not is_staff:

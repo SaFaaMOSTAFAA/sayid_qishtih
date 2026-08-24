@@ -1,5 +1,7 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 
@@ -23,7 +25,6 @@ class Product(models.Model):
     description = models.TextField()
     description_ar = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=0)
@@ -43,6 +44,31 @@ class Product(models.Model):
         verbose_name = "Product"
         verbose_name_plural = "Products"
         ordering = ["display_order", "id"]
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="products/")
+    display_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product} image {self.display_order}"
+
+    class Meta:
+        verbose_name = "Product Image"
+        verbose_name_plural = "Product Images"
+        ordering = ["display_order", "id"]
+
+
+@receiver(post_delete, sender=ProductImage)
+def delete_product_image_file_on_commit(sender, instance, **kwargs):
+    if not instance.image:
+        return
+
+    file_name = instance.image.name
+    storage = instance.image.storage
+    transaction.on_commit(lambda: storage.delete(file_name))
 
 
 class Offer(models.Model):

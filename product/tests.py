@@ -16,7 +16,7 @@ from PIL import Image
 
 from configrations.models import ContactUs
 
-from .models import Category, Client_review, Offer, Product
+from .models import Category, Client_review, Offer, Product, ProductImage
 
 
 class AuthAndProductAPITests(TestCase):
@@ -244,7 +244,23 @@ class AuthAndProductAPITests(TestCase):
         self.assertEqual([item["id"] for item in staff_response.data], [hidden.id])
         self.assertFalse(hidden.is_available)
 
-    def test_product_json_multipart_image_removal_and_invalid_boolean(self):
+    def product_payload(self, category, **overrides):
+        payload = {
+            "name": "Eshta",
+            "name_ar": "قشطة",
+            "description": "Fresh cream dessert",
+            "description_ar": "حلوى بالقشطة الطازجة",
+            "price": "25.00",
+            "category": category.id,
+            "quantity": 10,
+            "is_visible": True,
+            "is_available": True,
+            "display_order": 2,
+        }
+        payload.update(overrides)
+        return payload
+
+    def test_product_json_multipart_images_and_invalid_boolean(self):
         staff = self.user_model.objects.create_user(
             username="product-crud-admin",
             password="StrongPassword123",
@@ -255,35 +271,19 @@ class AuthAndProductAPITests(TestCase):
 
         create_response = self.client.post(
             reverse("product-list"),
-            {
-                "name": "Eshta",
-                "name_ar": "قشطة",
-                "description": "Fresh cream dessert",
-                "description_ar": "حلوى بالقشطة الطازجة",
-                "price": "25.00",
-                "category": category.id,
-                "quantity": 10,
-                "is_visible": True,
-                "is_available": True,
-                "display_order": 2,
-            },
+            self.product_payload(category),
             format="json",
         )
         product_id = create_response.data["id"]
         upload_response = self.client.patch(
             reverse("product-detail", args=[product_id]),
-            {"image": self.image_file(), "is_available": "false"},
+            {"images": [self.image_file("product-1.png")], "is_available": "false"},
             format="multipart",
         )
-        image_url = upload_response.data["image"]
+        image_url = upload_response.data["images"][0]["image"]
         preserve_response = self.client.patch(
             reverse("product-detail", args=[product_id]),
             {"description": "Updated without image"},
-            format="json",
-        )
-        remove_response = self.client.patch(
-            reverse("product-detail", args=[product_id]),
-            {"remove_image": True},
             format="json",
         )
         invalid_bool_response = self.client.get(reverse("product-list"), {"is_visible": "abc"})
@@ -300,16 +300,154 @@ class AuthAndProductAPITests(TestCase):
         delete_response = self.client.delete(reverse("product-detail", args=[product_id]))
 
         self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(create_response.data["images"], [])
         self.assertEqual(upload_response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(image_url)
-        self.assertEqual(preserve_response.data["image"], image_url)
-        self.assertEqual(remove_response.status_code, status.HTTP_200_OK)
-        self.assertIsNone(remove_response.data["image"])
+        self.assertEqual(preserve_response.data["images"][0]["image"], image_url)
         self.assertEqual(invalid_bool_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("is_visible", invalid_bool_response.data)
         self.assertFalse(unavailable_response.data["is_available"])
         self.assertFalse(positive_paused_response.data["is_available"])
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_product_create_accepts_up_to_five_images_and_rejects_six_atomically(self):
+        staff = self.user_model.objects.create_user(
+            username="product-image-create-admin",
+            password="StrongPassword123",
+            is_staff=True,
+        )
+        self.client.force_authenticate(user=staff)
+        category = Category.objects.create(name="Desserts")
+
+        one_image_response = self.client.post(
+            reverse("product-list"),
+            self.product_payload(category, name="One image", images=[self.image_file("one.png")]),
+            format="multipart",
+        )
+        five_images_response = self.client.post(
+            reverse("product-list"),
+            self.product_payload(
+                category,
+                name="Five images",
+                images=[self.image_file(f"five-{index}.png") for index in range(5)],
+            ),
+            format="multipart",
+        )
+        before_count = Product.objects.count()
+        six_images_response = self.client.post(
+            reverse("product-list"),
+            self.product_payload(
+                category,
+                name="Six images",
+                images=[self.image_file(f"six-{index}.png") for index in range(6)],
+            ),
+            format="multipart",
+        )
+
+        self.assertEqual(one_image_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(one_image_response.data["images"]), 1)
+        self.assertEqual(five_images_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual([image["display_order"] for image in five_images_response.data["images"]], [0, 1, 2, 3, 4])
+        self.assertEqual(six_images_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("images", six_images_response.data)
+        self.assertEqual(Product.objects.count(), before_count)
+
+    def test_product_update_removes_adds_and_normalizes_images(self):
+        staff = self.user_model.objects.create_user(
+            username="product-image-update-admin",
+            password="StrongPassword123",
+            is_staff=True,
+        )
+        self.client.force_authenticate(user=staff)
+        category = Category.objects.create(name="Desserts")
+        product = Product.objects.create(name="Multi", description="Multi", price="12.50", category=category)
+        first = ProductImage.objects.create(product=product, image=self.image_file("first.png"), display_order=0)
+        second = ProductImage.objects.create(product=product, image=self.image_file("second.png"), display_order=1)
+        third = ProductImage.objects.create(product=product, image=self.image_file("third.png"), display_order=2)
+
+        response = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {
+                "remove_image_ids": [second.id],
+                "images": [self.image_file("new-a.png"), self.image_file("new-b.png")],
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["images"]), 4)
+        self.assertEqual([image["display_order"] for image in response.data["images"]], [0, 1, 2, 3])
+        self.assertEqual([image["id"] for image in response.data["images"][:2]], [first.id, third.id])
+        self.assertFalse(ProductImage.objects.filter(id=second.id).exists())
+
+    def test_product_update_rejects_invalid_duplicate_and_oversized_image_changes_atomically(self):
+        staff = self.user_model.objects.create_user(
+            username="product-image-invalid-admin",
+            password="StrongPassword123",
+            is_staff=True,
+        )
+        self.client.force_authenticate(user=staff)
+        category = Category.objects.create(name="Desserts")
+        product = Product.objects.create(name="Main", description="Main", price="12.50", category=category)
+        other_product = Product.objects.create(name="Other", description="Other", price="12.50", category=category)
+        existing = [
+            ProductImage.objects.create(product=product, image=self.image_file(f"existing-{index}.png"), display_order=index)
+            for index in range(3)
+        ]
+        other_image = ProductImage.objects.create(product=other_product, image=self.image_file("other.png"))
+
+        valid_duplicate_remove = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {"remove_image_ids": [existing[1].id, existing[1].id]},
+            format="multipart",
+        )
+        too_many_response = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {"images": [self.image_file(f"too-many-{index}.png") for index in range(4)]},
+            format="multipart",
+        )
+        invalid_owner_response = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {"remove_image_ids": [other_image.id]},
+            format="multipart",
+        )
+        malformed_response = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {"remove_image_ids": ["abc"]},
+            format="multipart",
+        )
+
+        self.assertEqual(valid_duplicate_remove.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(valid_duplicate_remove.data["images"]), 2)
+        self.assertEqual(too_many_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(invalid_owner_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(malformed_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(ProductImage.objects.filter(id=other_image.id).exists())
+        self.assertEqual(product.images.count(), 2)
+
+    def test_product_json_patch_preserves_existing_images_and_response_ordering(self):
+        staff = self.user_model.objects.create_user(
+            username="product-image-json-admin",
+            password="StrongPassword123",
+            is_staff=True,
+        )
+        self.client.force_authenticate(user=staff)
+        category = Category.objects.create(name="Desserts")
+        product = Product.objects.create(name="Ordered", description="Ordered", price="12.50", category=category)
+        image_late = ProductImage.objects.create(product=product, image=self.image_file("late.png"), display_order=2)
+        image_first = ProductImage.objects.create(product=product, image=self.image_file("first.png"), display_order=0)
+        image_middle = ProductImage.objects.create(product=product, image=self.image_file("middle.png"), display_order=1)
+
+        response = self.client.patch(
+            reverse("product-detail", args=[product.id]),
+            {"price": "75.00"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["price"], "75.00")
+        self.assertEqual([image["id"] for image in response.data["images"]], [image_first.id, image_middle.id, image_late.id])
+        self.assertEqual(product.images.count(), 3)
 
     def test_offer_public_staff_and_date_validation(self):
         today = timezone.localdate()

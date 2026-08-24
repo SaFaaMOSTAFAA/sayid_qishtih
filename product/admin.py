@@ -1,5 +1,29 @@
 from django.contrib import admin
-from .models import Category, Client_review, Offer, Product
+from django.core.exceptions import ValidationError
+from django.forms.models import BaseInlineFormSet
+
+from .image_utils import MAX_PRODUCT_IMAGES
+from .models import Category, Client_review, Offer, Product, ProductImage
+
+
+class ProductImageInlineFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        active_forms = [
+            form
+            for form in self.forms
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False)
+        ]
+        if len(active_forms) > MAX_PRODUCT_IMAGES:
+            raise ValidationError(f"A product can have a maximum of {MAX_PRODUCT_IMAGES} images.")
+
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    formset = ProductImageInlineFormSet
+    extra = 0
+    max_num = MAX_PRODUCT_IMAGES
+    fields = ("image", "display_order")
 
 
 @admin.register(Category)
@@ -9,9 +33,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'name_ar', 'category', 'price', 'quantity', 'is_available', 'is_visible', 'display_order', 'image')
+    list_display = ('name', 'name_ar', 'category', 'price', 'quantity', 'is_available', 'is_visible', 'display_order')
     list_filter = ('category', 'is_available', 'is_visible')
     search_fields = ('name', 'description', 'name_ar', 'description_ar')
+    inlines = (ProductImageInline,)
 
 
 @admin.register(Offer)

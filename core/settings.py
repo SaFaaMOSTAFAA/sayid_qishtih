@@ -89,6 +89,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Sayid Qishtih API",
     "DESCRIPTION": "API Documentation",
     "VERSION": "1.0.0",
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 
@@ -223,7 +224,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.alsayedqeshta.com",
     "http://localhost:5173",
     "https://sayid-qishtih.baronlearning.com",
-    "https://alsayedqeshta.com",
+        "https://alsayedqeshta.com",
     "https://www.alsayedqeshta.com",
 
 ]

@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
-from product.models import Category, Client_review, Offer, Product
+from product.models import Category, Client_review, Offer, Product, ProductImage
 from rest_framework import serializers
 
+from .image_utils import MAX_PRODUCT_IMAGES, validate_image_file
+
 User = get_user_model()
-ALLOWED_IMAGE_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
-MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -15,18 +15,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ImageRemovalMixin:
     def validate_image(self, value):
-        if value is None:
-            return value
-
-        content_type = getattr(value, "content_type", None)
-        if content_type and content_type not in ALLOWED_IMAGE_CONTENT_TYPES:
-            raise serializers.ValidationError("Only JPEG, PNG, and WebP images are allowed.")
-
-        size = getattr(value, "size", 0)
-        if size and size > MAX_IMAGE_SIZE:
-            raise serializers.ValidationError("Image size must not exceed 5 MB.")
-
-        return value
+        return validate_image_file(value)
 
     def _update_image(self, instance, validated_data):
         remove_image = validated_data.pop("remove_image", False)
@@ -48,8 +37,15 @@ class ImageRemovalMixin:
         return super().create(validated_data)
 
 
-class ProductSerializer(ImageRemovalMixin, serializers.ModelSerializer):
-    remove_image = serializers.BooleanField(write_only=True, required=False, default=False)
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ("id", "image", "display_order")
+        read_only_fields = fields
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -60,14 +56,13 @@ class ProductSerializer(ImageRemovalMixin, serializers.ModelSerializer):
             "description",
             "description_ar",
             "price",
-            "image",
             "category",
             "quantity",
             "is_visible",
             "is_available",
             "display_order",
+            "images",
             "created_at",
-            "remove_image",
         )
         read_only_fields = ("id", "created_at")
 
@@ -81,10 +76,6 @@ class ProductSerializer(ImageRemovalMixin, serializers.ModelSerializer):
         if quantity == 0:
             attrs["is_available"] = False
         return attrs
-
-    def update(self, instance, validated_data):
-        self._update_image(instance, validated_data)
-        return super().update(instance, validated_data)
 
 
 class OfferSerializer(ImageRemovalMixin, serializers.ModelSerializer):
@@ -155,3 +146,27 @@ class DashboardStatsSerializer(serializers.Serializer):
     available_products = serializers.IntegerField()
     unavailable_products = serializers.IntegerField()
     current_offers = serializers.IntegerField()
+
+
+class ProductMultipartRequestSerializer(serializers.Serializer):
+    name = serializers.CharField(required=False)
+    name_ar = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    description = serializers.CharField(required=False)
+    description_ar = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+    category = serializers.IntegerField(required=False, allow_null=True)
+    quantity = serializers.IntegerField(required=False, min_value=0)
+    is_visible = serializers.BooleanField(required=False)
+    is_available = serializers.BooleanField(required=False)
+    display_order = serializers.IntegerField(required=False, min_value=0)
+    images = serializers.ListField(
+        child=serializers.FileField(),
+        required=False,
+        max_length=MAX_PRODUCT_IMAGES,
+        help_text='Upload images by repeating the multipart field "images".',
+    )
+    remove_image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        help_text='Remove existing images by repeating the multipart field "remove_image_ids".',
+    )
