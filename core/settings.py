@@ -221,11 +221,8 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     "https://alsayedqeshta.com",
     "https://www.alsayedqeshta.com",
-    "http://localhost:5173",
     "https://sayid-qishtih.baronlearning.com",
-        "https://alsayedqeshta.com",
-    "https://www.alsayedqeshta.com",
-
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_HEADERS = [
