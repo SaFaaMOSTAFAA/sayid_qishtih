@@ -89,7 +89,6 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Sayid Qishtih API",
     "DESCRIPTION": "API Documentation",
     "VERSION": "1.0.0",
-    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 
