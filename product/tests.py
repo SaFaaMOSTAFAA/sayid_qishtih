@@ -64,6 +64,95 @@ class AuthAndProductAPITests(TestCase):
         self.assertIn("refresh", response.data)
         self.assertTrue(self.user_model.objects.filter(username="ahmed").exists())
 
+    def test_register_validation_failure_does_not_create_user(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "invalid-client",
+                "email": "invalid@example.com",
+                "first_name": "Invalid",
+                "last_name": "Client",
+                "password": "StrongPassword123",
+                "password_confirm": "DifferentPassword123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("password_confirm", response.data)
+        self.assertFalse(self.user_model.objects.filter(username="invalid-client").exists())
+
+    def test_register_rejects_duplicate_phone_and_email_without_creating_user(self):
+        self.user_model.objects.create_user(
+            username="01012345678",
+            email="existing@example.com",
+            password="StrongPassword123",
+        )
+        before_count = self.user_model.objects.count()
+
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "01012345678",
+                "email": "existing@example.com",
+                "first_name": "Duplicate",
+                "last_name": "Client",
+                "password": "StrongPassword123",
+                "password_confirm": "StrongPassword123",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("username", response.data)
+        self.assertIn("email", response.data)
+        self.assertEqual(self.user_model.objects.count(), before_count)
+
+    def test_clients_are_staff_only_safe_ordered_and_searchable(self):
+        older_client = self.user_model.objects.create_user(
+            username="01000000001",
+            email="older@example.com",
+            first_name="Ahmed",
+            last_name="Older",
+            password="StrongPassword123",
+        )
+        newer_client = self.user_model.objects.create_user(
+            username="01000000002",
+            email="newer@example.com",
+            first_name="Mariam",
+            last_name="Newer",
+            password="StrongPassword123",
+        )
+        staff = self.user_model.objects.create_user(
+            username="clients-admin",
+            email="staff@example.com",
+            password="StrongPassword123",
+            is_staff=True,
+        )
+
+        anonymous_response = self.client.get(reverse("client_list"))
+        self.client.force_authenticate(user=older_client)
+        non_staff_response = self.client.get(reverse("client_list"))
+        self.client.force_authenticate(user=staff)
+        staff_response = self.client.get(reverse("client_list"))
+        search_response = self.client.get(reverse("client_list"), {"search": "Mariam"})
+
+        self.assertEqual(anonymous_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(non_staff_response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(staff_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [item["id"] for item in staff_response.data],
+            [newer_client.id, older_client.id],
+        )
+        self.assertEqual(
+            set(staff_response.data[0]),
+            {"id", "full_name", "email", "phone", "date_joined"},
+        )
+        self.assertNotIn("password", staff_response.data[0])
+        self.assertNotIn(staff.id, [item["id"] for item in staff_response.data])
+        self.assertNotIn("legacy_client", [item["phone"] for item in staff_response.data])
+        self.assertEqual([item["id"] for item in search_response.data], [newer_client.id])
+
     def test_login_refresh_and_me_auth_status_codes(self):
         user = self.user_model.objects.create_user(
             username="normal-user",
@@ -663,3 +752,4 @@ class AuthAndProductAPITests(TestCase):
         self.assertIn("/api/offers/", schema_text)
         self.assertIn("/api/contact-us/", schema_text)
         self.assertIn("/api/dashboard/stats/", schema_text)
+        self.assertIn("/api/clients/", schema_text)

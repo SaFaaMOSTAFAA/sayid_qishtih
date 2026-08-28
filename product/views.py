@@ -1,16 +1,17 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models.deletion import ProtectedError
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
+from rest_framework import filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import SAFE_METHODS, AllowAny, BasePermission, IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .auth_serializers import RegisterSerializer
+from .auth_serializers import ClientSerializer, RegisterSerializer
 from .image_utils import (
     apply_product_image_update,
     create_product_images,
@@ -74,6 +75,21 @@ class MeView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class ClientListView(ListAPIView):
+    serializer_class = ClientSerializer
+    permission_classes = [IsAdminUser]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["first_name", "last_name", "email", "username"]
+
+    def get_queryset(self):
+        return (
+            get_user_model()
+            .objects.filter(is_staff=False, is_superuser=False)
+            .exclude(username="legacy_client")
+            .order_by("-date_joined", "-id")
+        )
 
 
 class CategoryViewSet(ModelViewSet):

@@ -58,3 +58,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def get_refresh(self, obj) -> str:
         return self._get_tokens(obj)["refresh"]
+
+
+class ClientSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    phone = serializers.CharField(source="username", read_only=True)
+
+    class Meta:
+        model = User
+        fields = ("id", "full_name", "email", "phone", "date_joined")
+        read_only_fields = fields
+
+    def get_full_name(self, obj) -> str:
+        return obj.get_full_name() or obj.username

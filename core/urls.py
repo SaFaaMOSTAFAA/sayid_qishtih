@@ -26,7 +26,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from configrations.views import ContactUsViewSet
-from product.views import DashboardStatsView, LoginView, MeView, RegisterView
+from product.views import ClientListView, DashboardStatsView, LoginView, MeView, RegisterView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 
@@ -43,6 +43,7 @@ urlpatterns += i18n_patterns(
     path('api/', include('product.url')),
     path("api/", include(router.urls)),
     path("api/dashboard/stats/", DashboardStatsView.as_view(), name="dashboard_stats"),
+    path("api/clients/", ClientListView.as_view(), name="client_list"),
     path("api/auth/register/", RegisterView.as_view(), name="register"),
     path("api/auth/login/", LoginView.as_view(), name="token_obtain_pair"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
